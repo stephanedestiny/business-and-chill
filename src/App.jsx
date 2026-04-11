@@ -52,6 +52,8 @@ function App() {
   const [search, setSearch] = useState('')
   const [territory, setTerritory] = useState('Tous')
   const [showModal, setShowModal] = useState(false)
+  const [sector, setSector] = useState('Tous')
+  const categories = ['Tous', ...new Set(Object.values(NAF).map(v => v.split('|')[1]))]
 
   useEffect(() => { fetchBusinesses() }, [])
 
@@ -64,7 +66,8 @@ function App() {
   const filtered = businesses.filter(b => {
     const matchSearch = b.name?.toLowerCase().includes(search.toLowerCase())
     const matchTerritory = territory === 'Tous' || b.territory === territory
-    return matchSearch && matchTerritory
+    const matchSector = sector === 'Tous' || getCat(b.sector).label === sector
+    return matchSearch && matchTerritory && matchSector
   })
 
   return (
@@ -91,6 +94,24 @@ function App() {
             <option>Tous</option><option>Guadeloupe</option><option>Martinique</option><option>Guyane</option>
           </select>
           <button className="bg-orange-500 text-white px-8 font-bold text-sm">Chercher</button>
+        </div>
+      </div>
+      
+      <div className="border-b border-gray-100 bg-white sticky top-[65px] z-40">
+        <div className="max-w-6xl mx-auto px-6 overflow-x-auto">
+          <div className="flex gap-2 py-3 w-max">
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setSector(cat)}
+                className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition ${
+                  sector === cat ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
       <div className="max-w-6xl mx-auto px-6 py-10">
