@@ -1,11 +1,53 @@
 import { useEffect, useState } from 'react'
 import { supabase } from './supabase'
 
+const NAF_CATEGORIES = {
+  '10': { label: 'Alimentation', emoji: '🍽️', color: '#FF6B35' },
+  '11': { label: 'Boissons', emoji: '🍹', color: '#FF6B35' },
+  '41': { label: 'Construction', emoji: '🏗️', color: '#6B7280' },
+  '42': { label: 'Construction', emoji: '🏗️', color: '#6B7280' },
+  '43': { label: 'Construction', emoji: '🏗️', color: '#6B7280' },
+  '45': { label: 'Auto', emoji: '🚗', color: '#3B82F6' },
+  '46': { label: 'Commerce', emoji: '🛒', color: '#8B5CF6' },
+  '47': { label: 'Commerce', emoji: '🛒', color: '#8B5CF6' },
+  '49': { label: 'Transport', emoji: '🚌', color: '#F59E0B' },
+  '55': { label: 'Hébergement', emoji: '🏨', color: '#06B6D4' },
+  '56': { label: 'Restauration', emoji: '🍴', color: '#EF4444' },
+  '61': { label: 'Télécom', emoji: '📡', color: '#6366F1' },
+  '62': { label: 'Digital', emoji: '💻', color: '#6366F1' },
+  '63': { label: 'Digital', emoji: '💻', color: '#6366F1' },
+  '68': { label: 'Immobilier', emoji: '🏠', color: '#10B981' },
+  '69': { label: 'Services', emoji: '⚖️', color: '#F59E0B' },
+  '70': { label: 'Consulting', emoji: '🧠', color: '#F59E0B' },
+  '71': { label: 'Services', emoji: '⚙️', color: '#F59E0B' },
+  '74': { label: 'Créatif', emoji: '🎨', color: '#EC4899' },
+  '75': { label: 'Vétérinaire', emoji: '🐾', color: '#10B981' },
+  '77': { label: 'Location', emoji: '🔑', color: '#F59E0B' },
+  '78': { label: 'RH', emoji: '👥', color: '#6B7280' },
+  '81': { label: 'Entretien', emoji: '🧹', color: '#6B7280' },
+  '82': { label: 'Services', emoji: '📋', color: '#6B7280' },
+  '85': { label: 'Formation', emoji: '🎓', color: '#8B5CF6' },
+  '86': { label: 'Santé', emoji: '🏥', color: '#EF4444' },
+  '87': { label: 'Médico-social', emoji: '❤️', color: '#EF4444' },
+  '88': { label: 'Social', emoji: '🤝', color: '#10B981' },
+  '90': { label: 'Arts', emoji: '🎭', color: '#EC4899' },
+  '93': { label: 'Sport & Loisirs', emoji: '⚽', color: '#F59E0B' },
+  '95': { label: 'Réparation', emoji: '🔧', color: '#6B7280' },
+  '96': { label: 'Beauté', emoji: '💆', color: '#EC4899' },
+}
+
+function getCategorie(codeNAF) {
+  if (!codeNAF) return { label: 'Autre', emoji: '🏪', color: '#6B7280' }
+  const prefix = codeNAF.substring(0, 2)
+  return NAF_CATEGORIES[prefix] || { label: 'Autre', emoji: '🏪', color: '#6B7280' }
+}
+
 function App() {
   const [businesses, setBusinesses] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [territory, setTerritory] = useState('Tous')
+  const [sector, setSector] = useState('Tous')
   const [showModal, setShowModal] = useState(false)
 
   useEffect(() => {
@@ -20,11 +62,14 @@ function App() {
     setLoading(false)
   }
 
+  const categories = ['Tous', ...new Set(Object.values(NAF_CATEGORIES).map(c => c.label))]
+
   const filtered = businesses.filter(b => {
     const matchSearch = b.name?.toLowerCase().includes(search.toLowerCase()) ||
       b.description?.toLowerCase().includes(search.toLowerCase())
     const matchTerritory = territory === 'Tous' || b.territory === territory
-    return matchSearch && matchTerritory
+    const matchSector = sector === 'Tous' || getCategorie(b.sector).label === sector
+    return matchSearch && matchTerritory && matchSector
   })
 
   return (
@@ -86,6 +131,27 @@ function App() {
         </div>
       </div>
 
+      {/* CATEGORIES FILTER */}
+      <div className="border-b border-gray-100 bg-white sticky top-[65px] z-40">
+        <div className="max-w-6xl mx-auto px-6 overflow-x-auto">
+          <div className="flex gap-2 py-3 w-max">
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setSector(cat)}
+                className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition ${
+                  sector === cat
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {cat !== 'Tous' && Object.values(NAF_CATEGORIES).find(c => c.label === cat)?.emoji} {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* GRID */}
       <div className="max-w-6xl mx-auto px-6 py-10">
         <div className="flex items-center justify-between mb-6">
@@ -111,19 +177,27 @@ function App() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filtered.map(b => (
               <div key={b.id} className="bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer">
-                <div className="aspect-[4/3] flex items-center justify-center text-5xl"
-                  style={{background: 'linear-gradient(135deg, #FF8040, #FF5C00)'}}>
-                  🏪
+                <div
+                  className="aspect-[4/3] flex items-center justify-center text-6xl"
+                  style={{background: `linear-gradient(135deg, ${getCategorie(b.sector).color}dd, ${getCategorie(b.sector).color}88)`}}
+                >
+                  {getCategorie(b.sector).emoji}
                 </div>
                 <div className="p-4">
                   <p className="text-xs text-orange-500 font-bold uppercase tracking-wide mb-1">
                     📍 {b.territory}
                   </p>
-                  <h3 className="font-bold text-gray-900 mb-1">{b.name}</h3>
+                  <h3 className="font-bold text-gray-900 mb-1 line-clamp-1">{b.name}</h3>
                   <p className="text-sm text-gray-500 line-clamp-2">{b.description}</p>
                   <div className="mt-3 flex items-center justify-between">
-                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-                      {b.sector}
+                    <span
+                      className="text-xs px-2 py-1 rounded-full font-semibold"
+                      style={{
+                        background: `${getCategorie(b.sector).color}18`,
+                        color: getCategorie(b.sector).color
+                      }}
+                    >
+                      {getCategorie(b.sector).emoji} {getCategorie(b.sector).label}
                     </span>
                     <span className="text-xs font-bold text-orange-500">Voir →</span>
                   </div>
