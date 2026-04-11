@@ -1,45 +1,49 @@
 import { useEffect, useState } from 'react'
 import { supabase } from './supabase'
 
-const NAF_CATEGORIES = {
-  '10': { label: 'Alimentation', emoji: '🍽️', color: '#FF6B35' },
-  '11': { label: 'Boissons', emoji: '🍹', color: '#FF6B35' },
-  '41': { label: 'Construction', emoji: '🏗️', color: '#6B7280' },
-  '42': { label: 'Construction', emoji: '🏗️', color: '#6B7280' },
-  '43': { label: 'Construction', emoji: '🏗️', color: '#6B7280' },
-  '45': { label: 'Auto', emoji: '🚗', color: '#3B82F6' },
-  '46': { label: 'Commerce', emoji: '🛒', color: '#8B5CF6' },
-  '47': { label: 'Commerce', emoji: '🛒', color: '#8B5CF6' },
-  '49': { label: 'Transport', emoji: '🚌', color: '#F59E0B' },
-  '55': { label: 'Hébergement', emoji: '🏨', color: '#06B6D4' },
-  '56': { label: 'Restauration', emoji: '🍴', color: '#EF4444' },
-  '61': { label: 'Télécom', emoji: '📡', color: '#6366F1' },
-  '62': { label: 'Digital', emoji: '💻', color: '#6366F1' },
-  '63': { label: 'Digital', emoji: '💻', color: '#6366F1' },
-  '68': { label: 'Immobilier', emoji: '🏠', color: '#10B981' },
-  '69': { label: 'Services', emoji: '⚖️', color: '#F59E0B' },
-  '70': { label: 'Consulting', emoji: '🧠', color: '#F59E0B' },
-  '71': { label: 'Services', emoji: '⚙️', color: '#F59E0B' },
-  '74': { label: 'Créatif', emoji: '🎨', color: '#EC4899' },
-  '75': { label: 'Vétérinaire', emoji: '🐾', color: '#10B981' },
-  '77': { label: 'Location', emoji: '🔑', color: '#F59E0B' },
-  '78': { label: 'RH', emoji: '👥', color: '#6B7280' },
-  '81': { label: 'Entretien', emoji: '🧹', color: '#6B7280' },
-  '82': { label: 'Services', emoji: '📋', color: '#6B7280' },
-  '85': { label: 'Formation', emoji: '🎓', color: '#8B5CF6' },
-  '86': { label: 'Santé', emoji: '🏥', color: '#EF4444' },
-  '87': { label: 'Médico-social', emoji: '❤️', color: '#EF4444' },
-  '88': { label: 'Social', emoji: '🤝', color: '#10B981' },
-  '90': { label: 'Arts', emoji: '🎭', color: '#EC4899' },
-  '93': { label: 'Sport & Loisirs', emoji: '⚽', color: '#F59E0B' },
-  '95': { label: 'Réparation', emoji: '🔧', color: '#6B7280' },
-  '96': { label: 'Beauté', emoji: '💆', color: '#EC4899' },
+const NAF = {
+  '10':'🍽️|Alimentation|#FF6B35','56':'🍴|Restauration|#EF4444',
+  '46':'🛒|Commerce|#8B5CF6','47':'🛒|Commerce|#8B5CF6',
+  '96':'💆|Beauté|#EC4899','86':'🏥|Santé|#EF4444',
+  '62':'💻|Digital|#6366F1','85':'🎓|Formation|#8B5CF6',
+  '68':'🏠|Immobilier|#10B981','70':'🧠|Consulting|#F59E0B',
+  '41':'🏗️|Construction|#6B7280','45':'🚗|Auto|#3B82F6',
+  '49':'🚌|Transport|#F59E0B','55':'🏨|Hébergement|#06B6D4',
+  '93':'⚽|Sport|#F59E0B','90':'🎭|Arts|#EC4899',
+  '81':'🧹|Entretien|#6B7280','82':'📋|Services|#6B7280',
 }
 
-function getCategorie(codeNAF) {
-  if (!codeNAF) return { label: 'Autre', emoji: '🏪', color: '#6B7280' }
-  const prefix = codeNAF.substring(0, 2)
-  return NAF_CATEGORIES[prefix] || { label: 'Autre', emoji: '🏪', color: '#6B7280' }
+const PHOTOS = {
+  'Restauration':'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&h=300&fit=crop',
+  'Commerce':'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop',
+  'Beauté':'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400&h=300&fit=crop',
+  'Construction':'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=300&fit=crop',
+  'Santé':'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop',
+  'Digital':'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=300&fit=crop',
+  'Formation':'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=400&h=300&fit=crop',
+  'Immobilier':'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=300&fit=crop',
+  'Transport':'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400&h=300&fit=crop',
+  'Sport':'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+  'Arts':'https://images.unsplash.com/photo-1499781350541-7783f6c6a0c8?w=400&h=300&fit=crop',
+  'Hébergement':'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400&h=300&fit=crop',
+  'Consulting':'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400&h=300&fit=crop',
+  'Auto':'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=400&h=300&fit=crop',
+  'Alimentation':'https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=300&fit=crop',
+  'Entretien':'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=300&fit=crop',
+  'Services':'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400&h=300&fit=crop',
+  'Autre':'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=400&h=300&fit=crop',
+}
+
+function getCat(code) {
+  if (!code) return {emoji:'🏪',label:'Autre',color:'#6B7280'}
+  const v = NAF[code.substring(0,2)]
+  if (!v) return {emoji:'🏪',label:'Autre',color:'#6B7280'}
+  const [emoji,label,color] = v.split('|')
+  return {emoji,label,color}
+}
+
+function getPhoto(label) {
+  return PHOTOS[label] || PHOTOS['Autre']
 }
 
 function App() {
@@ -47,284 +51,100 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [territory, setTerritory] = useState('Tous')
-  const [sector, setSector] = useState('Tous')
   const [showModal, setShowModal] = useState(false)
 
-  useEffect(() => {
-    fetchBusinesses()
-  }, [])
+  useEffect(() => { fetchBusinesses() }, [])
 
   async function fetchBusinesses() {
-    const { data, error } = await supabase
-      .from('businesses')
-      .select('*')
+    const { data, error } = await supabase.from('businesses').select('*')
     if (!error) setBusinesses(data)
     setLoading(false)
   }
 
-  const categories = ['Tous', ...new Set(Object.values(NAF_CATEGORIES).map(c => c.label))]
-
   const filtered = businesses.filter(b => {
-    const matchSearch = b.name?.toLowerCase().includes(search.toLowerCase()) ||
-      b.description?.toLowerCase().includes(search.toLowerCase())
+    const matchSearch = b.name?.toLowerCase().includes(search.toLowerCase())
     const matchTerritory = territory === 'Tous' || b.territory === territory
-    const matchSector = sector === 'Tous' || getCategorie(b.sector).label === sector
-    return matchSearch && matchTerritory && matchSector
+    return matchSearch && matchTerritory
   })
 
   return (
     <div className="min-h-screen bg-[#FDFAF7]">
-
-      {/* NAV */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="text-xl font-black text-gray-900">
             Business <span className="text-orange-500">&</span> Chill
-            <span className="ml-2 text-xs bg-orange-500 text-white px-2 py-1 rounded-full">Bêta</span>
+            <span className="ml-2 text-xs bg-orange-500 text-white px-2 py-1 rounded-full">Beta</span>
           </div>
-          <button
-            onClick={() => setShowModal(true)}
-            className="bg-orange-500 hover:bg-orange-400 text-white font-bold text-sm px-5 py-2 rounded-full transition"
-          >
+          <button onClick={() => setShowModal(true)} className="bg-orange-500 hover:bg-orange-400 text-white font-bold text-sm px-5 py-2 rounded-full transition">
             + Mon business
           </button>
         </div>
       </nav>
-
-      {/* HERO */}
       <div className="pt-24 pb-12 px-6 bg-gradient-to-b from-orange-50 to-[#FDFAF7] text-center">
-        <p className="text-orange-500 text-xs font-bold tracking-widest uppercase mb-4">
-          L'annuaire des business caribéens
-        </p>
         <h1 className="text-5xl font-black text-gray-900 mb-4">
           Découvre les business<br/>
           <span className="text-orange-500 italic">des Caraïbes</span>
         </h1>
-        <p className="text-gray-500 text-lg mb-8 max-w-md mx-auto">
-          Guadeloupe, Martinique, Guyane et les 44 îles — tous référencés ici.
-        </p>
-
-        {/* SEARCH */}
         <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg border border-gray-100 flex overflow-hidden">
-          <input
-            type="text"
-            placeholder="Restaurant, salon, agence web..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="flex-1 px-6 py-4 text-sm outline-none"
-          />
-          <select
-            value={territory}
-            onChange={e => setTerritory(e.target.value)}
-            className="px-4 py-4 text-sm border-l border-gray-100 outline-none bg-white"
-          >
-            <option>Tous</option>
-            <option>Guadeloupe</option>
-            <option>Martinique</option>
-            <option>Guyane</option>
-            <option>Saint-Martin</option>
-            <option>Caraïbes</option>
+          <input type="text" placeholder="Rechercher..." value={search} onChange={e => setSearch(e.target.value)} className="flex-1 px-6 py-4 text-sm outline-none"/>
+          <select value={territory} onChange={e => setTerritory(e.target.value)} className="px-4 py-4 text-sm border-l border-gray-100 outline-none bg-white">
+            <option>Tous</option><option>Guadeloupe</option><option>Martinique</option><option>Guyane</option>
           </select>
-          <button className="bg-orange-500 hover:bg-orange-400 text-white px-8 font-bold text-sm transition">
-            🔍 Chercher
-          </button>
+          <button className="bg-orange-500 text-white px-8 font-bold text-sm">Chercher</button>
         </div>
       </div>
-
-      {/* CATEGORIES FILTER */}
-      <div className="border-b border-gray-100 bg-white sticky top-[65px] z-40">
-        <div className="max-w-6xl mx-auto px-6 overflow-x-auto">
-          <div className="flex gap-2 py-3 w-max">
-            {categories.map(cat => (
-              <button
-                key={cat}
-                onClick={() => setSector(cat)}
-                className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition ${
-                  sector === cat
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                {cat !== 'Tous' && Object.values(NAF_CATEGORIES).find(c => c.label === cat)?.emoji} {cat}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* GRID */}
       <div className="max-w-6xl mx-auto px-6 py-10">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-900">
-            {loading ? 'Chargement...' : `${filtered.length} business référencé(s)`}
-          </h2>
-        </div>
-
-        {loading ? (
-          <div className="text-center py-20 text-gray-400">Chargement...</div>
-        ) : filtered.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-4xl mb-4">🌴</p>
-            <p className="text-gray-500 text-lg">Aucun business trouvé</p>
-            <button
-              onClick={() => setShowModal(true)}
-              className="mt-4 bg-orange-500 text-white font-bold px-6 py-3 rounded-full hover:bg-orange-400 transition"
-            >
-              + Ajouter le premier business
-            </button>
-          </div>
-        ) : (
+        <h2 className="text-xl font-bold mb-6">{loading ? 'Chargement...' : filtered.length + ' business'}</h2>
+        {!loading && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filtered.map(b => (
-              <div key={b.id} className="bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer">
-                <div
-                  className="aspect-[4/3] flex items-center justify-center text-6xl"
-                  style={{background: `linear-gradient(135deg, ${getCategorie(b.sector).color}dd, ${getCategorie(b.sector).color}88)`}}
-                >
-                  {getCategorie(b.sector).emoji}
-                </div>
-                <div className="p-4">
-                  <p className="text-xs text-orange-500 font-bold uppercase tracking-wide mb-1">
-                    📍 {b.territory}
-                  </p>
-                  <h3 className="font-bold text-gray-900 mb-1 line-clamp-1">{b.name}</h3>
-                  <p className="text-sm text-gray-500 line-clamp-2">{b.description}</p>
-                  <div className="mt-3 flex items-center justify-between">
-                    <span
-                      className="text-xs px-2 py-1 rounded-full font-semibold"
-                      style={{
-                        background: `${getCategorie(b.sector).color}18`,
-                        color: getCategorie(b.sector).color
-                      }}
-                    >
-                      {getCategorie(b.sector).emoji} {getCategorie(b.sector).label}
-                    </span>
-                    <span className="text-xs font-bold text-orange-500">Voir →</span>
+            {filtered.map(b => {
+              const cat = getCat(b.sector)
+              return (
+                <div key={b.id} className="bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all cursor-pointer">
+                  <div className="aspect-[4/3] relative overflow-hidden">
+                    <img src={getPhoto(cat.label)} alt={cat.label} className="w-full h-full object-cover"/>
+                    <div className="absolute top-2 left-2 bg-white/90 rounded-full px-2 py-1 text-xs font-bold">
+                      {cat.emoji} {cat.label}
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <p className="text-xs text-orange-500 font-bold uppercase mb-1">📍 {b.territory}</p>
+                    <h3 className="font-bold text-gray-900 mb-1 line-clamp-1">{b.name}</h3>
+                    <p className="text-sm text-gray-500 line-clamp-2">{b.description}</p>
                   </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>
-
-      {/* MODAL */}
-      {showModal && (
-        <AddBusinessModal
-          onClose={() => setShowModal(false)}
-          onSuccess={() => { setShowModal(false); fetchBusinesses() }}
-        />
-      )}
+      {showModal && <AddBusinessModal onClose={() => setShowModal(false)} onSuccess={() => { setShowModal(false); fetchBusinesses() }}/>}
     </div>
   )
 }
 
 function AddBusinessModal({ onClose, onSuccess }) {
-  const [form, setForm] = useState({
-    name: '', description: '', territory: 'Guadeloupe',
-    sector: 'Restauration', email: '', website: ''
-  })
+  const [form, setForm] = useState({name:'',description:'',territory:'Guadeloupe',sector:'56.10A',email:'',website:''})
   const [loading, setLoading] = useState(false)
-
   async function handleSubmit() {
     if (!form.name || !form.email) return alert('Nom et email requis')
     setLoading(true)
-    const { error } = await supabase
-      .from('businesses')
-      .insert([{ ...form, plan: 'gratuit' }])
-    if (error) {
-      alert('Erreur: ' + error.message)
-    } else {
-      onSuccess()
-    }
+    const { error } = await supabase.from('businesses').insert([{...form, plan:'gratuit'}])
+    if (error) alert('Erreur: ' + error.message)
+    else onSuccess()
     setLoading(false)
   }
-
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl max-w-md w-full p-8 relative max-h-[90vh] overflow-y-auto">
-        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl">✕</button>
-        <h2 className="text-2xl font-black mb-2">🎉 Mon business</h2>
-        <p className="text-gray-500 text-sm mb-6">Gratuit et immédiat. Visible sous 24h.</p>
-
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl max-w-md w-full p-8 relative">
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 text-xl">X</button>
+        <h2 className="text-2xl font-black mb-6">Mon business</h2>
         <div className="space-y-4">
-          <div>
-            <label className="text-xs font-bold uppercase tracking-wide text-gray-700 block mb-1">Nom du business *</label>
-            <input
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-orange-400 bg-gray-50"
-              placeholder="Ex: Restaurant Chez Marie"
-              value={form.name}
-              onChange={e => setForm({...form, name: e.target.value})}
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs font-bold uppercase tracking-wide text-gray-700 block mb-1">Territoire *</label>
-              <select
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-orange-400 bg-gray-50"
-                value={form.territory}
-                onChange={e => setForm({...form, territory: e.target.value})}
-              >
-                <option>Guadeloupe</option>
-                <option>Martinique</option>
-                <option>Guyane</option>
-                <option>Saint-Martin</option>
-                <option>Caraïbes</option>
-              </select>
-            </div>
-            <div>
-              <label className="text-xs font-bold uppercase tracking-wide text-gray-700 block mb-1">Secteur *</label>
-              <select
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-orange-400 bg-gray-50"
-                value={form.sector}
-                onChange={e => setForm({...form, sector: e.target.value})}
-              >
-                <option>Restauration</option>
-                <option>Mode & Beauté</option>
-                <option>Services</option>
-                <option>Commerce</option>
-                <option>Tourisme</option>
-                <option>Digital</option>
-                <option>Santé</option>
-                <option>Autre</option>
-              </select>
-            </div>
-          </div>
-          <div>
-            <label className="text-xs font-bold uppercase tracking-wide text-gray-700 block mb-1">Description *</label>
-            <textarea
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-orange-400 bg-gray-50 resize-none"
-              rows={3}
-              placeholder="Décrivez votre activité..."
-              value={form.description}
-              onChange={e => setForm({...form, description: e.target.value})}
-            />
-          </div>
-          <div>
-            <label className="text-xs font-bold uppercase tracking-wide text-gray-700 block mb-1">Email *</label>
-            <input
-              type="email"
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-orange-400 bg-gray-50"
-              placeholder="contact@monbusiness.com"
-              value={form.email}
-              onChange={e => setForm({...form, email: e.target.value})}
-            />
-          </div>
-          <div>
-            <label className="text-xs font-bold uppercase tracking-wide text-gray-700 block mb-1">Site web / Instagram</label>
-            <input
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-orange-400 bg-gray-50"
-              placeholder="https://..."
-              value={form.website}
-              onChange={e => setForm({...form, website: e.target.value})}
-            />
-          </div>
-          <button
-            onClick={handleSubmit}
-            disabled={loading}
-            className="w-full bg-orange-500 hover:bg-orange-400 text-white font-bold py-4 rounded-full transition disabled:opacity-50"
-          >
-            {loading ? 'Envoi...' : 'Créer ma fiche gratuite →'}
+          <input className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm" placeholder="Nom *" value={form.name} onChange={e => setForm({...form,name:e.target.value})}/>
+          <input type="email" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm" placeholder="Email *" value={form.email} onChange={e => setForm({...form,email:e.target.value})}/>
+          <textarea className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm resize-none" rows={3} placeholder="Description" value={form.description} onChange={e => setForm({...form,description:e.target.value})}/>
+          <button onClick={handleSubmit} disabled={loading} className="w-full bg-orange-500 text-white font-bold py-4 rounded-full disabled:opacity-50">
+            {loading ? 'Envoi...' : 'Créer ma fiche gratuite'}
           </button>
         </div>
       </div>
