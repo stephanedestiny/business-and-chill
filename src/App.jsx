@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from './supabase'
+import BusinessPage from './BusinessPage'
 
 const NAF = {
   '10':'🍽️|Alimentation|#FF6B35','11':'🍹|Boissons|#FF6B35',
@@ -47,6 +48,7 @@ function App() {
   const [territory, setTerritory] = useState('Tous')
   const [sector, setSector] = useState('Tous')
   const [showModal, setShowModal] = useState(false)
+  const [selectedBusiness, setSelectedBusiness] = useState(null)
   const categories = ['Tous', ...new Set(Object.values(NAF).map(v => v.split('|')[1]))]
 
   useEffect(() => { fetchBusinesses() }, [])
@@ -110,7 +112,7 @@ function App() {
             {filtered.map(b => {
               const cat = getCat(b.sector)
               return (
-                <div key={b.id} className="bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all cursor-pointer">
+                <div key={b.id} onClick={() => setSelectedBusiness(b)} className="bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all cursor-pointer">
                   <div className="aspect-[4/3] relative overflow-hidden">
                     <img src={getPhoto(cat.label, b.photo_url)} alt={cat.label} className="w-full h-full object-cover"/>
                     <div className="absolute top-2 left-2 bg-white/90 rounded-full px-2 py-1 text-xs font-bold">{cat.emoji} {cat.label}</div>
@@ -127,6 +129,7 @@ function App() {
         )}
       </div>
       {showModal && <AddBusinessModal onClose={() => setShowModal(false)} onSuccess={() => { setShowModal(false); fetchBusinesses() }}/>}
+      {selectedBusiness && <BusinessPage business={selectedBusiness} onClose={() => setSelectedBusiness(null)}/>}
     </div>
   )
 }
