@@ -282,7 +282,7 @@ function App() {
 }
 
 function AddBusinessModal({ onClose, onSuccess }) {
-  const [form, setForm] = useState({name:'',description:'',territory:'Guadeloupe',sector:'56.10A',email:'',phone:'',website:'',photo_url:''})
+  const [form, setForm] = useState({name:'',description:'',territory:'Guadeloupe',sector:'56.10A',email:'',phone:'',whatsapp:'',website:'',horaires:'',photo_url:''})
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState(false)
 
@@ -358,6 +358,16 @@ function AddBusinessModal({ onClose, onSuccess }) {
           <div>
             <label className="text-xs font-bold uppercase text-gray-700 block mb-1">Telephone</label>
             <input type="tel" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none bg-gray-50" placeholder="+596 696 00 00 00" value={form.phone} onChange={e => setForm({...form,phone:e.target.value})}/>
+          </div>
+          <div>
+            <label className="text-xs font-bold uppercase text-gray-700 block mb-1">WhatsApp</label>
+            <input type="tel" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none bg-gray-50" placeholder="+596 696 00 00 00" value={form.whatsapp} onChange={e => setForm({...form,whatsapp:e.target.value})}/>
+          </div>
+          <div>
+            <label className="text-xs font-bold uppercase text-gray-700 block mb-1">Horaires d ouverture</label>
+            <textarea className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none bg-gray-50 resize-none" rows={3} placeholder="Lun-Ven: 8h-17h
+Sam: 9h-13h
+Dim: Ferme" value={form.horaires} onChange={e => setForm({...form,horaires:e.target.value})}/>
           </div>
           <div>
             <label className="text-xs font-bold uppercase text-gray-700 block mb-1">Description</label>
