@@ -23,12 +23,40 @@ const PHOTOS = {
   'Construction':'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=300&fit=crop',
   'Santé':'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop',
   'Digital':'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=300&fit=crop',
+  'Formation':'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=400&h=300&fit=crop',
+  'Immobilier':'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=300&fit=crop',
+  'Transport':'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400&h=300&fit=crop',
+  'Sport':'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+  'Arts':'https://images.unsplash.com/photo-1499781350541-7783f6c6a0c8?w=400&h=300&fit=crop',
   'Hébergement':'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400&h=300&fit=crop',
   'Consulting':'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400&h=300&fit=crop',
   'Auto':'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=400&h=300&fit=crop',
   'Alimentation':'https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=300&fit=crop',
+  'Entretien':'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=300&fit=crop',
+  'Services':'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400&h=300&fit=crop',
   'Autre':'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=400&h=300&fit=crop',
 }
+
+const CATEGORIES = [
+  {label:'Tous', emoji:'🌴'},
+  {label:'Restauration', emoji:'🍴'},
+  {label:'Commerce', emoji:'🛒'},
+  {label:'Beauté', emoji:'💆'},
+  {label:'Construction', emoji:'🏗️'},
+  {label:'Auto', emoji:'🚗'},
+  {label:'Transport', emoji:'🚌'},
+  {label:'Hébergement', emoji:'🏨'},
+  {label:'Digital', emoji:'💻'},
+  {label:'Immobilier', emoji:'🏠'},
+  {label:'Consulting', emoji:'🧠'},
+  {label:'Formation', emoji:'🎓'},
+  {label:'Santé', emoji:'🏥'},
+  {label:'Sport', emoji:'⚽'},
+  {label:'Arts', emoji:'🎭'},
+  {label:'Alimentation', emoji:'🍽️'},
+  {label:'Entretien', emoji:'🧹'},
+  {label:'Services', emoji:'📋'},
+]
 
 function getCat(code) {
   if (!code) return {emoji:'🏪',label:'Autre',color:'#6B7280'}
@@ -43,6 +71,25 @@ function getPhoto(label, photoUrl) {
   return PHOTOS[label] || PHOTOS['Autre']
 }
 
+function BusinessCard({ b, onClick, featured }) {
+  const cat = getCat(b.sector)
+  return (
+    <div onClick={onClick} className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer">
+      <div className={"relative overflow-hidden " + (featured ? "aspect-[3/2]" : "aspect-[4/3]")}>
+        <img src={getPhoto(cat.label, b.photo_url)} alt={cat.label} className="w-full h-full object-cover"/>
+        <div className="absolute top-2 left-2 bg-white/90 rounded-full px-2 py-1 text-xs font-bold">{cat.emoji} {cat.label}</div>
+        {b.photo_url && <div className="absolute top-2 right-2 bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full">Verifie</div>}
+      </div>
+      <div className="p-4">
+        <p className="text-xs text-orange-500 font-bold uppercase tracking-wide mb-1">📍 {b.territory}</p>
+        <h3 className="font-bold text-gray-900 mb-1 line-clamp-1">{b.name}</h3>
+        <p className="text-sm text-gray-500 line-clamp-2">{b.description || 'Business local caribeen'}</p>
+        {b.phone && <p className="text-xs text-gray-400 mt-2">📞 {b.phone}</p>}
+      </div>
+    </div>
+  )
+}
+
 function App() {
   const [businesses, setBusinesses] = useState([])
   const [loading, setLoading] = useState(true)
@@ -50,10 +97,9 @@ function App() {
   const [territory, setTerritory] = useState('Tous')
   const [sector, setSector] = useState('Tous')
   const [showModal, setShowModal] = useState(false)
+  const [selectedBusiness, setSelectedBusiness] = useState(null)
   const [showBlog, setShowBlog] = useState(false)
   const [selectedArticle, setSelectedArticle] = useState(null)
-  const [selectedBusiness, setSelectedBusiness] = useState(null)
-  const categories = ['Tous', ...new Set(Object.values(NAF).map(v => v.split('|')[1]))]
 
   useEffect(() => { fetchBusinesses() }, [])
 
@@ -70,67 +116,53 @@ function App() {
     return matchSearch && matchTerritory && matchSector
   })
 
+  const isFiltered = sector !== 'Tous' || territory !== 'Tous' || search
+
   return (
     <div className="min-h-screen bg-[#FDFAF7]">
+      {/* NAV */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="text-xl font-black text-gray-900">
             Business <span className="text-orange-500">&</span> Chill
             <span className="ml-2 text-xs bg-orange-500 text-white px-2 py-1 rounded-full">Beta</span>
           </div>
-          <div className="flex items-center gap-3">
-            <button onClick={() => setShowBlog(true)} className="text-gray-600 hover:text-gray-900 font-semibold text-sm transition">
-              Blog
-            </button>
+          <div className="flex items-center gap-4">
+            <button onClick={() => setShowBlog(true)} className="text-gray-600 hover:text-gray-900 font-semibold text-sm">Blog</button>
             <button onClick={() => setShowModal(true)} className="bg-orange-500 hover:bg-orange-400 text-white font-bold text-sm px-5 py-2 rounded-full transition">
               + Mon business
             </button>
           </div>
         </div>
       </nav>
-      <div className="pt-24 pb-12 px-6 bg-gradient-to-b from-orange-50 to-[#FDFAF7] text-center">
+
+      {/* HERO */}
+      <div className="pt-24 pb-8 px-6 bg-gradient-to-b from-orange-50 to-[#FDFAF7] text-center">
+        <p className="text-orange-500 text-xs font-bold tracking-widest uppercase mb-3">L'annuaire des business caribeens</p>
         <h1 className="text-5xl font-black text-gray-900 mb-4">
-          Découvre les business<br/>
-          <span className="text-orange-500 italic">des Caraïbes</span>
+          Decouvre les business<br/>
+          <span className="text-orange-500 italic">des Caraibes</span>
         </h1>
-        <p className="text-gray-500 text-lg mb-8 max-w-md mx-auto">Guadeloupe, Martinique, Guyane et les 44 îles.</p>
+        <p className="text-gray-500 text-lg mb-6 max-w-md mx-auto">Guadeloupe, Martinique, Guyane et les 44 iles.</p>
         <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg border border-gray-100 flex overflow-hidden">
-          <input type="text" placeholder="Rechercher..." value={search} onChange={e => setSearch(e.target.value)} className="flex-1 px-6 py-4 text-sm outline-none"/>
+          <input type="text" placeholder="Rechercher un business..." value={search} onChange={e => setSearch(e.target.value)} className="flex-1 px-6 py-4 text-sm outline-none"/>
           <select value={territory} onChange={e => setTerritory(e.target.value)} className="px-4 py-4 text-sm border-l border-gray-100 outline-none bg-white">
             <option>Tous</option><option>Guadeloupe</option><option>Martinique</option><option>Guyane</option><option>Saint-Martin</option>
           </select>
-          <button className="bg-orange-500 text-white px-8 font-bold text-sm">Chercher</button>
+          <button onClick={() => {}} className="bg-orange-500 hover:bg-orange-400 text-white px-8 font-bold text-sm transition">Chercher</button>
         </div>
       </div>
+
+      {/* CATEGORIES AIRBNB STYLE */}
       <div className="border-b border-gray-100 bg-white sticky top-[65px] z-40">
         <div className="max-w-6xl mx-auto px-4 overflow-x-auto">
           <div className="flex gap-6 py-4 w-max">
-            {[
-              {label:'Tous', emoji:'🌴'},
-              {label:'Restauration', emoji:'🍴'},
-              {label:'Commerce', emoji:'🛒'},
-              {label:'Beauté', emoji:'💆'},
-              {label:'Construction', emoji:'🏗️'},
-              {label:'Auto', emoji:'🚗'},
-              {label:'Transport', emoji:'🚌'},
-              {label:'Hébergement', emoji:'🏨'},
-              {label:'Digital', emoji:'💻'},
-              {label:'Immobilier', emoji:'🏠'},
-              {label:'Consulting', emoji:'🧠'},
-              {label:'Formation', emoji:'🎓'},
-              {label:'Santé', emoji:'🏥'},
-              {label:'Sport', emoji:'⚽'},
-              {label:'Arts', emoji:'🎭'},
-              {label:'Alimentation', emoji:'🍽️'},
-              {label:'Entretien', emoji:'🧹'},
-              {label:'Services', emoji:'📋'},
-            ].map(cat => (
-              <button key={cat.label} onClick={() => setSector(cat.label)}
-                className="flex flex-col items-center gap-1 min-w-[64px] group">
-                <div className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl transition ${sector === cat.label ? 'bg-orange-100 ring-2 ring-orange-500' : 'bg-gray-100 group-hover:bg-gray-200'}`}>
+            {CATEGORIES.map(cat => (
+              <button key={cat.label} onClick={() => setSector(cat.label)} className="flex flex-col items-center gap-1 min-w-[64px] group">
+                <div className={"w-14 h-14 rounded-full flex items-center justify-center text-2xl transition " + (sector === cat.label ? 'bg-orange-100 ring-2 ring-orange-500' : 'bg-gray-100 group-hover:bg-gray-200')}>
                   {cat.emoji}
                 </div>
-                <span className={`text-xs font-medium whitespace-nowrap ${sector === cat.label ? 'text-orange-500 font-bold' : 'text-gray-600'}`}>
+                <span className={"text-xs font-medium whitespace-nowrap " + (sector === cat.label ? 'text-orange-500 font-bold' : 'text-gray-600')}>
                   {cat.label}
                 </span>
               </button>
@@ -138,33 +170,59 @@ function App() {
           </div>
         </div>
       </div>
+
+      {/* CONTENU PRINCIPAL */}
       <div className="max-w-6xl mx-auto px-6 py-10">
-        <h2 className="text-xl font-bold mb-6">{loading ? 'Chargement...' : filtered.length + ' business'}</h2>
-        {!loading && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filtered.map(b => {
-              const cat = getCat(b.sector)
+        {loading ? (
+          <div className="text-center py-20 text-gray-400">Chargement...</div>
+        ) : filtered.length === 0 ? (
+          <div className="text-center py-20">
+            <p className="text-4xl mb-4">🌴</p>
+            <p className="text-gray-500 text-lg">Aucun business trouve</p>
+          </div>
+        ) : isFiltered ? (
+          <>
+            <h2 className="text-xl font-bold text-gray-900 mb-6">{filtered.length} business trouve(s)</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filtered.map(b => <BusinessCard key={b.id} b={b} onClick={() => setSelectedBusiness(b)}/>)}
+            </div>
+          </>
+        ) : (
+          <>
+            {/* BUSINESS EN VEDETTE */}
+            {filtered.filter(b => b.photo_url).length > 0 && (
+              <div className="mb-12">
+                <h2 className="text-2xl font-black text-gray-900 mb-6">⭐ Business en vedette</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {filtered.filter(b => b.photo_url).slice(0,4).map(b => <BusinessCard key={b.id} b={b} onClick={() => setSelectedBusiness(b)} featured/>)}
+                </div>
+              </div>
+            )}
+
+            {/* PAR TERRITOIRE */}
+            {['Guadeloupe','Martinique','Guyane','Saint-Martin'].map(t => {
+              const biz = filtered.filter(b => b.territory === t)
+              if (biz.length === 0) return null
               return (
-                <div key={b.id} onClick={() => setSelectedBusiness(b)} className="bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all cursor-pointer">
-                  <div className="aspect-[4/3] relative overflow-hidden">
-                    <img src={getPhoto(cat.label, b.photo_url)} alt={cat.label} className="w-full h-full object-cover"/>
-                    <div className="absolute top-2 left-2 bg-white/90 rounded-full px-2 py-1 text-xs font-bold">{cat.emoji} {cat.label}</div>
+                <div key={t} className="mb-12">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-black text-gray-900">📍 {t}</h2>
+                    <button onClick={() => setTerritory(t)} className="text-sm font-semibold text-gray-500 hover:text-gray-900 underline">
+                      Voir tout ({biz.length})
+                    </button>
                   </div>
-                  <div className="p-4">
-                    <p className="text-xs text-orange-500 font-bold uppercase mb-1">📍 {b.territory}</p>
-                    <h3 className="font-bold text-gray-900 mb-1 line-clamp-1">{b.name}</h3>
-                    <p className="text-sm text-gray-500 line-clamp-2">{b.description}</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {biz.slice(0,8).map(b => <BusinessCard key={b.id} b={b} onClick={() => setSelectedBusiness(b)}/>)}
                   </div>
                 </div>
               )
             })}
-          </div>
+          </>
         )}
       </div>
-      {showModal && <AddBusinessModal onClose={() => setShowModal(false)} onSuccess={() => { setShowModal(false); fetchBusinesses() }}/>}
 
       {/* FOOTER */}
-      <footer className="bg-gray-50 border-t border-gray-200 mt-16">
+      <footer className="bg-gray-50 border-t border-gray-200 mt-8">
         <div className="max-w-6xl mx-auto px-6 py-12">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 mb-10">
             <div>
@@ -210,6 +268,8 @@ function App() {
           </div>
         </div>
       </footer>
+
+      {showModal && <AddBusinessModal onClose={() => setShowModal(false)} onSuccess={() => { setShowModal(false); fetchBusinesses() }}/>}
       {selectedBusiness && <BusinessPage business={selectedBusiness} onClose={() => setSelectedBusiness(null)}/>}
       {showBlog && <BlogPage onClose={() => setShowBlog(false)} onArticle={a => { setShowBlog(false); setSelectedArticle(a) }}/>}
       {selectedArticle && <ArticlePage article={selectedArticle} onClose={() => setSelectedArticle(null)}/>}
@@ -218,7 +278,7 @@ function App() {
 }
 
 function AddBusinessModal({ onClose, onSuccess }) {
-  const [form, setForm] = useState({name:'',description:'',territory:'Guadeloupe',sector:'56.10A',email:'',photo_url:''})
+  const [form, setForm] = useState({name:'',description:'',territory:'Guadeloupe',sector:'56.10A',email:'',phone:'',website:'',photo_url:''})
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState(false)
 
@@ -251,7 +311,7 @@ function AddBusinessModal({ onClose, onSuccess }) {
       <div className="bg-white rounded-2xl max-w-md w-full p-8 relative max-h-[90vh] overflow-y-auto">
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 text-xl">X</button>
         <h2 className="text-2xl font-black mb-2">Mon business</h2>
-        <p className="text-gray-500 text-sm mb-6">Gratuit et immédiat.</p>
+        <p className="text-gray-500 text-sm mb-6">Gratuit et immediat.</p>
         <div className="space-y-4">
           <div>
             <label className="text-xs font-bold uppercase text-gray-700 block mb-1">Nom *</label>
@@ -268,6 +328,32 @@ function AddBusinessModal({ onClose, onSuccess }) {
               <label className="text-xs font-bold uppercase text-gray-700 block mb-1">Email *</label>
               <input type="email" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none bg-gray-50" placeholder="contact@..." value={form.email} onChange={e => setForm({...form,email:e.target.value})}/>
             </div>
+          </div>
+          <div>
+            <label className="text-xs font-bold uppercase text-gray-700 block mb-1">Categorie</label>
+            <select className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none bg-gray-50" value={form.sector} onChange={e => setForm({...form,sector:e.target.value})}>
+              <option value="56.10A">Restauration</option>
+              <option value="47.00A">Commerce</option>
+              <option value="96.02A">Beauté</option>
+              <option value="41.00A">Construction</option>
+              <option value="45.00A">Auto</option>
+              <option value="49.00A">Transport</option>
+              <option value="55.00A">Hébergement</option>
+              <option value="62.00A">Digital</option>
+              <option value="68.00A">Immobilier</option>
+              <option value="70.00A">Consulting</option>
+              <option value="85.00A">Formation</option>
+              <option value="86.00A">Santé</option>
+              <option value="93.00A">Sport</option>
+              <option value="90.00A">Arts</option>
+              <option value="10.00A">Alimentation</option>
+              <option value="81.00A">Entretien</option>
+              <option value="82.00A">Services</option>
+            </select>
+          </div>
+          <div>
+            <label className="text-xs font-bold uppercase text-gray-700 block mb-1">Telephone</label>
+            <input type="tel" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none bg-gray-50" placeholder="+596 696 00 00 00" value={form.phone} onChange={e => setForm({...form,phone:e.target.value})}/>
           </div>
           <div>
             <label className="text-xs font-bold uppercase text-gray-700 block mb-1">Description</label>
@@ -293,7 +379,7 @@ function AddBusinessModal({ onClose, onSuccess }) {
               </label>
             )}
           </div>
-          <button onClick={handleSubmit} disabled={loading} className="w-full bg-orange-500 text-white font-bold py-4 rounded-full disabled:opacity-50">
+          <button onClick={handleSubmit} disabled={loading} className="w-full bg-orange-500 hover:bg-orange-400 text-white font-bold py-4 rounded-full transition disabled:opacity-50">
             {loading ? 'Envoi...' : 'Creer ma fiche gratuite'}
           </button>
         </div>
