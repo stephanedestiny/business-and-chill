@@ -103,12 +103,36 @@ function App() {
         </div>
       </div>
       <div className="border-b border-gray-100 bg-white sticky top-[65px] z-40">
-        <div className="max-w-6xl mx-auto px-6 overflow-x-auto">
-          <div className="flex gap-2 py-3 w-max">
-            {categories.map(cat => (
-              <button key={cat} onClick={() => setSector(cat)}
-                className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition ${sector === cat ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
-                {cat}
+        <div className="max-w-6xl mx-auto px-4 overflow-x-auto">
+          <div className="flex gap-6 py-4 w-max">
+            {[
+              {label:'Tous', emoji:'🌴'},
+              {label:'Restauration', emoji:'🍴'},
+              {label:'Commerce', emoji:'🛒'},
+              {label:'Beauté', emoji:'💆'},
+              {label:'Construction', emoji:'🏗️'},
+              {label:'Auto', emoji:'🚗'},
+              {label:'Transport', emoji:'🚌'},
+              {label:'Hébergement', emoji:'🏨'},
+              {label:'Digital', emoji:'💻'},
+              {label:'Immobilier', emoji:'🏠'},
+              {label:'Consulting', emoji:'🧠'},
+              {label:'Formation', emoji:'🎓'},
+              {label:'Santé', emoji:'🏥'},
+              {label:'Sport', emoji:'⚽'},
+              {label:'Arts', emoji:'🎭'},
+              {label:'Alimentation', emoji:'🍽️'},
+              {label:'Entretien', emoji:'🧹'},
+              {label:'Services', emoji:'📋'},
+            ].map(cat => (
+              <button key={cat.label} onClick={() => setSector(cat.label)}
+                className="flex flex-col items-center gap-1 min-w-[64px] group">
+                <div className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl transition ${sector === cat.label ? 'bg-orange-100 ring-2 ring-orange-500' : 'bg-gray-100 group-hover:bg-gray-200'}`}>
+                  {cat.emoji}
+                </div>
+                <span className={`text-xs font-medium whitespace-nowrap ${sector === cat.label ? 'text-orange-500 font-bold' : 'text-gray-600'}`}>
+                  {cat.label}
+                </span>
               </button>
             ))}
           </div>
@@ -138,6 +162,54 @@ function App() {
         )}
       </div>
       {showModal && <AddBusinessModal onClose={() => setShowModal(false)} onSuccess={() => { setShowModal(false); fetchBusinesses() }}/>}
+
+      {/* FOOTER */}
+      <footer className="bg-gray-50 border-t border-gray-200 mt-16">
+        <div className="max-w-6xl mx-auto px-6 py-12">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 mb-10">
+            <div>
+              <h4 className="font-black text-gray-900 mb-4">Business Chill</h4>
+              <ul className="space-y-2">
+                <li><button onClick={() => setShowBlog(true)} className="text-sm text-gray-500 hover:text-gray-800">Blog</button></li>
+                <li><a href="#" className="text-sm text-gray-500 hover:text-gray-800">A propos</a></li>
+                <li><a href="#" className="text-sm text-gray-500 hover:text-gray-800">Contact</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-black text-gray-900 mb-4">Territoires</h4>
+              <ul className="space-y-2">
+                {['Guadeloupe','Martinique','Guyane','Saint-Martin'].map(t => (
+                  <li key={t}><button onClick={() => setTerritory(t)} className="text-sm text-gray-500 hover:text-gray-800">{t}</button></li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-black text-gray-900 mb-4">Pour les business</h4>
+              <ul className="space-y-2">
+                <li><button onClick={() => setShowModal(true)} className="text-sm text-gray-500 hover:text-gray-800">Ajouter mon business</button></li>
+                <li><a href="/admin" className="text-sm text-gray-500 hover:text-gray-800">Espace admin</a></li>
+                <li><a href="https://calendly.com/stephanedestiny" target="_blank" rel="noreferrer" className="text-sm text-gray-500 hover:text-gray-800">Prendre RDV</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-black text-gray-900 mb-4">NANO AGENCY</h4>
+              <ul className="space-y-2">
+                <li><a href="https://calendly.com/stephanedestiny" target="_blank" rel="noreferrer" className="text-sm text-gray-500 hover:text-gray-800">Consulting</a></li>
+                <li><a href="#" className="text-sm text-gray-500 hover:text-gray-800">UGC & Contenus</a></li>
+                <li><a href="#" className="text-sm text-gray-500 hover:text-gray-800">Creation de site</a></li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-gray-200 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-sm text-gray-400">2025 Business Chill · Destiny Media Group · Guadeloupe</p>
+            <div className="flex items-center gap-4">
+              <a href="#" className="text-sm text-gray-400 hover:text-gray-600">Mentions legales</a>
+              <a href="#" className="text-sm text-gray-400 hover:text-gray-600">CGU</a>
+              <a href="#" className="text-sm text-gray-400 hover:text-gray-600">Confidentialite</a>
+            </div>
+          </div>
+        </div>
+      </footer>
       {selectedBusiness && <BusinessPage business={selectedBusiness} onClose={() => setSelectedBusiness(null)}/>}
       {showBlog && <BlogPage onClose={() => setShowBlog(false)} onArticle={a => { setShowBlog(false); setSelectedArticle(a) }}/>}
       {selectedArticle && <ArticlePage article={selectedArticle} onClose={() => setSelectedArticle(null)}/>}
