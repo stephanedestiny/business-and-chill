@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { supabase } from './supabase'
 import BusinessPage from './BusinessPage'
+import BlogPage from './BlogPage'
+import ArticlePage from './ArticlePage'
 
 const NAF = {
   '10':'🍽️|Alimentation|#FF6B35','11':'🍹|Boissons|#FF6B35',
@@ -48,6 +50,8 @@ function App() {
   const [territory, setTerritory] = useState('Tous')
   const [sector, setSector] = useState('Tous')
   const [showModal, setShowModal] = useState(false)
+  const [showBlog, setShowBlog] = useState(false)
+  const [selectedArticle, setSelectedArticle] = useState(null)
   const [selectedBusiness, setSelectedBusiness] = useState(null)
   const categories = ['Tous', ...new Set(Object.values(NAF).map(v => v.split('|')[1]))]
 
@@ -74,9 +78,14 @@ function App() {
             Business <span className="text-orange-500">&</span> Chill
             <span className="ml-2 text-xs bg-orange-500 text-white px-2 py-1 rounded-full">Beta</span>
           </div>
-          <button onClick={() => setShowModal(true)} className="bg-orange-500 hover:bg-orange-400 text-white font-bold text-sm px-5 py-2 rounded-full transition">
-            + Mon business
-          </button>
+          <div className="flex items-center gap-3">
+            <button onClick={() => setShowBlog(true)} className="text-gray-600 hover:text-gray-900 font-semibold text-sm transition">
+              Blog
+            </button>
+            <button onClick={() => setShowModal(true)} className="bg-orange-500 hover:bg-orange-400 text-white font-bold text-sm px-5 py-2 rounded-full transition">
+              + Mon business
+            </button>
+          </div>
         </div>
       </nav>
       <div className="pt-24 pb-12 px-6 bg-gradient-to-b from-orange-50 to-[#FDFAF7] text-center">
@@ -130,6 +139,8 @@ function App() {
       </div>
       {showModal && <AddBusinessModal onClose={() => setShowModal(false)} onSuccess={() => { setShowModal(false); fetchBusinesses() }}/>}
       {selectedBusiness && <BusinessPage business={selectedBusiness} onClose={() => setSelectedBusiness(null)}/>}
+      {showBlog && <BlogPage onClose={() => setShowBlog(false)} onArticle={a => { setShowBlog(false); setSelectedArticle(a) }}/>}
+      {selectedArticle && <ArticlePage article={selectedArticle} onClose={() => setSelectedArticle(null)}/>}
     </div>
   )
 }
