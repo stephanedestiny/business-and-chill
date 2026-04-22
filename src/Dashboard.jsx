@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import Galerie from './Galerie'
 import { supabase } from './supabase'
 
 export default function Dashboard() {
@@ -130,6 +131,11 @@ export default function Dashboard() {
               ))}
             </div>
           )}
+        </div>
+
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 mt-4">
+          <h3 className="font-black text-gray-900 mb-4">Galerie photos</h3>
+          <Galerie businessId={business.id} canEdit={true}/>
         </div>
 
         {/* INFOS FICHE */}

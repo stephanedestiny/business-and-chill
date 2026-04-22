@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import AvisSection from './AvisSection'
+import Galerie from './Galerie'
 import PricingPage from './PricingPage'
 
 const PHOTOS = {
@@ -130,6 +131,7 @@ export default function BusinessPage({ business: b, onClose }) {
               </a>
             </div>
 
+            <Galerie businessId={b.id} canEdit={false}/>
             <AvisSection businessId={b.id}/>
 
             {/* BANNER PREMIUM */}
