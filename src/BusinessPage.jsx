@@ -1,4 +1,5 @@
-import { supabase } from './supabase'
+import { useState } from 'react'
+import PricingPage from './PricingPage'
 
 const PHOTOS = {
   'Restauration':'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=400&fit=crop',
@@ -28,90 +29,52 @@ function getCat(code) {
 }
 
 export default function BusinessPage({ business: b, onClose }) {
+  const [showPricing, setShowPricing] = useState(false)
   const cat = getCat(b.sector)
   const photo = b.photo_url || PHOTOS[cat.label] || PHOTOS['Autre']
 
   return (
-    <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center backdrop-blur-sm" onClick={onClose}>
-      <div className="bg-white w-full max-w-2xl rounded-t-3xl sm:rounded-3xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-
-        {/* PHOTO HERO */}
-        <div className="relative h-56 sm:h-72 overflow-hidden rounded-t-3xl sm:rounded-t-3xl">
-          <img src={photo} alt={b.name} className="w-full h-full object-cover"/>
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"/>
-          <button onClick={onClose} className="absolute top-4 right-4 bg-white/90 rounded-full w-9 h-9 flex items-center justify-center font-bold text-gray-700 hover:bg-white transition">
-            ✕
-          </button>
-          <div className="absolute bottom-4 left-4">
-            <span className="bg-white/90 rounded-full px-3 py-1 text-xs font-bold">
-              {cat.emoji} {cat.label}
-            </span>
-          </div>
-        </div>
-
-        {/* CONTENU */}
-        <div className="p-6">
-          <div className="flex items-start justify-between mb-4">
-            <div>
-              <h1 className="text-2xl font-black text-gray-900 mb-1">{b.name}</h1>
-              <p className="text-orange-500 font-semibold text-sm">📍 {b.territory}</p>
+    <>
+      <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center backdrop-blur-sm" onClick={onClose}>
+        <div className="bg-white w-full max-w-2xl rounded-t-3xl sm:rounded-3xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+          <div className="relative h-56 sm:h-72 overflow-hidden rounded-t-3xl">
+            <img src={photo} alt={b.name} className="w-full h-full object-cover"/>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"/>
+            <button onClick={onClose} className="absolute top-4 right-4 bg-white/90 rounded-full w-9 h-9 flex items-center justify-center font-bold text-gray-700">✕</button>
+            <div className="absolute bottom-4 left-4">
+              <span className="bg-white/90 rounded-full px-3 py-1 text-xs font-bold">{cat.emoji} {cat.label}</span>
             </div>
-            <span className="text-xs px-3 py-1 rounded-full font-semibold mt-1" style={{background: cat.color + '18', color: cat.color}}>
-              {cat.label}
-            </span>
           </div>
-
-          {b.description && (
-            <p className="text-gray-600 text-sm leading-relaxed mb-6">{b.description}</p>
-          )}
-
-          {/* INFOS CONTACT */}
-          <div className="bg-gray-50 rounded-2xl p-4 mb-6 space-y-3">
-            <h3 className="font-bold text-gray-900 text-sm mb-3">📋 Informations</h3>
-            {b.phone && (
-              <a href={`tel:${b.phone}`} className="flex items-center gap-3 text-sm text-gray-700 hover:text-orange-500 transition">
-                <span className="w-8 h-8 bg-orange-50 rounded-full flex items-center justify-center">📞</span>
-                {b.phone}
-              </a>
-            )}
-            {b.email && (
-              <a href={`mailto:${b.email}`} className="flex items-center gap-3 text-sm text-gray-700 hover:text-orange-500 transition">
-                <span className="w-8 h-8 bg-orange-50 rounded-full flex items-center justify-center">✉️</span>
-                {b.email}
-              </a>
-            )}
-            {b.website && (
-              <a href={b.website} target="_blank" rel="noreferrer" className="flex items-center gap-3 text-sm text-gray-700 hover:text-orange-500 transition">
-                <span className="w-8 h-8 bg-orange-50 rounded-full flex items-center justify-center">🌐</span>
-                {b.website}
-              </a>
-            )}
-          </div>
-
-          {/* CTA */}
-          <div className="flex gap-3">
-            {b.phone && (
-              <a href={`tel:${b.phone}`} className="flex-1 bg-orange-500 hover:bg-orange-400 text-white font-bold py-3 rounded-full text-center text-sm transition">
-                📞 Appeler
-              </a>
-            )}
-            {b.email && (
-              <a href={`mailto:${b.email}`} className="flex-1 border border-gray-200 hover:border-gray-300 text-gray-700 font-bold py-3 rounded-full text-center text-sm transition">
-                ✉️ Contacter
-              </a>
-            )}
-          </div>
-
-          {/* BANNER PREMIUM */}
-          <div className="mt-6 bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-200 rounded-2xl p-4 text-center">
-            <p className="text-sm font-bold text-gray-900 mb-1">🚀 Vous êtes propriétaire de ce business ?</p>
-            <p className="text-xs text-gray-500 mb-3">Améliorez votre fiche avec une page de vente complète</p>
-            <button className="bg-orange-500 hover:bg-orange-400 text-white font-bold text-xs px-6 py-2 rounded-full transition">
-              Voir les offres →
-            </button>
+          <div className="p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h1 className="text-2xl font-black text-gray-900 mb-1">{b.name}</h1>
+                <p className="text-orange-500 font-semibold text-sm">📍 {b.territory}</p>
+              </div>
+              <span className="text-xs px-3 py-1 rounded-full font-semibold mt-1" style={{background: cat.color + '18', color: cat.color}}>{cat.label}</span>
+            </div>
+            {b.description && <p className="text-gray-600 text-sm leading-relaxed mb-6">{b.description}</p>}
+            <div className="bg-gray-50 rounded-2xl p-4 mb-6 space-y-3">
+              <h3 className="font-bold text-gray-900 text-sm mb-3">📋 Informations</h3>
+              {b.phone && <a href={"tel:" + b.phone} className="flex items-center gap-3 text-sm text-gray-700 hover:text-orange-500"><span className="w-8 h-8 bg-orange-50 rounded-full flex items-center justify-center">📞</span>{b.phone}</a>}
+              {b.email && <a href={"mailto:" + b.email} className="flex items-center gap-3 text-sm text-gray-700 hover:text-orange-500"><span className="w-8 h-8 bg-orange-50 rounded-full flex items-center justify-center">✉️</span>{b.email}</a>}
+              {b.website && <a href={b.website} target="_blank" rel="noreferrer" className="flex items-center gap-3 text-sm text-gray-700 hover:text-orange-500"><span className="w-8 h-8 bg-orange-50 rounded-full flex items-center justify-center">🌐</span>{b.website}</a>}
+            </div>
+            <div className="flex gap-3 mb-6">
+              {b.phone && <a href={"tel:" + b.phone} className="flex-1 bg-orange-500 hover:bg-orange-400 text-white font-bold py-3 rounded-full text-center text-sm">📞 Appeler</a>}
+              {b.email && <a href={"mailto:" + b.email} className="flex-1 border border-gray-200 text-gray-700 font-bold py-3 rounded-full text-center text-sm">✉️ Contacter</a>}
+            </div>
+            <div className="bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-200 rounded-2xl p-4 text-center">
+              <p className="text-sm font-bold text-gray-900 mb-1">🚀 Vous etes proprietaire de ce business ?</p>
+              <p className="text-xs text-gray-500 mb-3">Ameliorez votre fiche avec une page de vente complete</p>
+              <button onClick={() => setShowPricing(true)} className="bg-orange-500 hover:bg-orange-400 text-white font-bold text-xs px-6 py-2 rounded-full transition">
+                Voir les offres
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+      {showPricing && <PricingPage onClose={() => setShowPricing(false)} businessName={b.name}/>}
+    </>
   )
 }
