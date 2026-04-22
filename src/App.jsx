@@ -3,6 +3,7 @@ import { supabase } from './supabase'
 import BusinessPage from './BusinessPage'
 import BlogPage from './BlogPage'
 import ArticlePage from './ArticlePage'
+import MapPage from './MapPage'
 
 const NAF = {
   '10':'🍽️|Alimentation|#FF6B35','11':'🍹|Boissons|#FF6B35',
@@ -100,6 +101,7 @@ function App() {
   const [selectedBusiness, setSelectedBusiness] = useState(null)
   const [showBlog, setShowBlog] = useState(false)
   const [selectedArticle, setSelectedArticle] = useState(null)
+  const [showMap, setShowMap] = useState(false)
 
   useEffect(() => { fetchBusinesses() }, [])
 
@@ -129,6 +131,7 @@ function App() {
           </div>
           <div className="flex items-center gap-4">
             <button onClick={() => setShowBlog(true)} className="text-gray-600 hover:text-gray-900 font-semibold text-sm">Blog</button>
+            <button onClick={() => setShowMap(true)} className="text-gray-600 hover:text-gray-900 font-semibold text-sm">🗺️ Carte</button>
             <button onClick={() => setShowModal(true)} className="bg-orange-500 hover:bg-orange-400 text-white font-bold text-sm px-5 py-2 rounded-full transition">
               + Mon business
             </button>
@@ -273,6 +276,7 @@ function App() {
       {selectedBusiness && <BusinessPage business={selectedBusiness} onClose={() => setSelectedBusiness(null)}/>}
       {showBlog && <BlogPage onClose={() => setShowBlog(false)} onArticle={a => { setShowBlog(false); setSelectedArticle(a) }}/>}
       {selectedArticle && <ArticlePage article={selectedArticle} onClose={() => setSelectedArticle(null)}/>}
+      {showMap && <MapPage onClose={() => setShowMap(false)} onBusiness={b => setSelectedBusiness(b)}/>}
     </div>
   )
 }
