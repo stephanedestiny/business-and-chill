@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import AvisSection from './AvisSection'
 import PricingPage from './PricingPage'
 
 const PHOTOS = {
@@ -128,6 +129,8 @@ export default function BusinessPage({ business: b, onClose }) {
                 Facebook
               </a>
             </div>
+
+            <AvisSection businessId={b.id}/>
 
             {/* BANNER PREMIUM */}
             <div className="bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-200 rounded-2xl p-4 text-center">
