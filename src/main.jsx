@@ -5,6 +5,7 @@ import './index.css'
 import App from './App.jsx'
 import Admin from './Admin.jsx'
 import ImportSirene from './ImportSirene.jsx'
+import Dashboard from './Dashboard.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -13,6 +14,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/" element={<App />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/import" element={<ImportSirene />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,
