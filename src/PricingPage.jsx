@@ -1,7 +1,3 @@
-import { loadStripe } from '@stripe/stripe-js'
-
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
-
 const PLANS = [
   {
     id: 'ref',
@@ -23,16 +19,23 @@ const PLANS = [
   }
 ]
 
-export default function PricingPage({ onClose }) {
+export default function PricingPage({ onClose, businessName }) {
   async function handleSubscribe(plan) {
-    const stripe = await stripePromise
-    const { error } = await stripe.redirectToCheckout({
-      lineItems: [{ price: plan.priceId, quantity: 1 }],
-      mode: 'subscription',
-      successUrl: window.location.origin + '?success=true',
-      cancelUrl: window.location.origin,
-    })
-    if (error) alert(error.message)
+    try {
+      const response = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ priceId: plan.priceId, businessName })
+      })
+      const data = await response.json()
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        alert('Erreur: ' + (data.error || 'Probleme de connexion'))
+      }
+    } catch (err) {
+      alert('Erreur: ' + err.message)
+    }
   }
 
   return (
